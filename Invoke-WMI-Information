@@ -1,0 +1,150 @@
+function Invoke-WMI-Information
+{
+    Param
+    (
+        [bool]
+        $local,
+
+        [bool]
+        $remote,
+
+        [string]
+        $computername,
+
+        [string]
+        $username,
+
+        [string]
+        $password
+    )
+
+if ($local -eq $true -or $remote -eq $false)
+{
+
+    wmic process list >> detailedprocesses.txt
+    
+    wmic process list brief >> processes.txt
+    
+    wmic environment list >> environmentvars.txt
+    
+    wmic /output:osInformations.html os get /format:hform
+    
+    wmic /output:InstalledSoftware.html product get /format:hform
+    
+    wmic startup list full >> startup.txt
+    
+    wmic os get bootdevice,buildnumber,caption,freespaceinpagingfiles,installdate,name,systemdrive,windowsdirectory >> osInformation.txt
+    
+    wmic useraccount list >> userinfo.txt
+    
+    wmic group list >> groupinfo.txt
+    
+    wmic qfe list >> patches.txt
+    
+    wmic share list >> shares.txt
+    
+    wmic nicconfig list >> networkinfo.txt
+    
+    wmic services list >> services.txt
+
+}
+
+if ($remote -eq $true -and $username -eq $Null)
+{
+
+    wmic /node:"$computername" process list >> detailedprocesses.txt
+    
+    wmic /node:"$computername" process list brief >> processes.txt
+    
+    wmic /node:"$computername" environment list >> environmentvars.txt
+    
+    wmic /node:"$computername" /output:osInformations.html os get /format:hform
+    
+    wmic /node:"$computername" /output:InstalledSoftware.html product get /format:hform
+    
+    wmic /node:"$computername" startup list full >> startup.txt
+    
+    wmic /node:"$computername" os get bootdevice,buildnumber,caption,freespaceinpagingfiles,installdate,name,systemdrive,windowsdirectory >> osInformation.txt
+    
+    wmic /node:"$computername" useraccount list >> userinfo.txt
+    
+    wmic /node:"$computername" group list >> groupinfo.txt
+    
+    wmic /node:"$computername" qfe list >> patches.txt
+    
+    wmic /node:"$computername" share list >> shares.txt
+    
+    wmic /node:"$computername" nicconfig list >> networkinfo.txt
+    
+    wmic /node:"$computername" services list >> services.txt
+        
+}
+
+if ($remote -eq $true -and $username -ne $Null -and $password -ne $Null)
+{
+    wmic /node:"$computername" /user:”$username" /password:"$password" process list >> detailedprocesses.txt
+    
+    wmic /node:"$computername" /user:”$username" /password:"$password" process list brief >> processes.txt
+    
+    wmic /node:"$computername" /user:”$username" /password:"$password" environment list >> environmentvars.txt
+    
+    wmic /node:"$computername" /user:”$username" /password:"$password" /output:osInformations.html os get /format:hform
+    
+    wmic /node:"$computername" /user:”$username" /password:"$password" /output:InstalledSoftware.html product get /format:hform
+    
+    wmic /node:"$computername" /user:”$username" /password:"$password" startup list full >> startup.txt
+    
+    wmic /node:"$computername" /user:”$username" /password:"$password" os get bootdevice,buildnumber,caption,freespaceinpagingfiles,installdate,name,systemdrive,windowsdirectory >> osInformation.txt
+    
+    wmic /node:"$computername" /user:”$username" /password:"$password" useraccount list >> userinfo.txt
+    
+    wmic /node:"$computername" /user:”$username" /password:"$password" group list >> groupinfo.txt
+    
+    wmic /node:"$computername" /user:”$username" /password:"$password" qfe list >> patches.txt
+    
+    wmic /node:"$computername" /user:”$username" /password:"$password" share list >> shares.txt
+    
+    wmic /node:"$computername" /user:”$username" /password:"$password" nicconfig list >> networkinfo.txt
+    
+    wmic /node:"$computername" /user:”$username" /password:"$password" services list >> services.txt
+
+}
+
+<#Cheat Sheet
+Turn on Remoted Desktop Remotely:
+Wmic /node:”servername” /user:”user@domain” /password: “password” RDToggle where ServerName=”server name” call SetAllowTSConnections 1
+
+Start an Application
+wmic process call create “calc.exe”
+
+Terminate an Application
+wmic process where name=”calc.exe” call terminate
+
+Change Process Priority
+wmic process where name=”explorer.exe” call setpriority 64
+
+Get List of Process Identifiers
+wmic process where (Name=’svchost.exe’) get name,processid
+
+Find a specific Process
+wmic process list brief find “cmd.exe”
+wmic /node:”HOST” bios get serialnumber
+
+Get PC Product Number
+wmic /node:”HOST” baseboard get product
+
+Services Report on a Remote Machine HTML Formatted:
+wmic /output:c:services.htm /node:server1 service list full / format:htable
+
+Get Startmode of Services
+Wmic service get caption, name, startmode, state
+
+Change Start Mode of Service:
+wmic service where (name like “Fax” OR name like “Alerter”) CALL ChangeStartMode Disabled
+
+Get Running Services Information
+Wmic service where (state=”running”) get caption, name, startmode, state
+
+#>
+
+}
